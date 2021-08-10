@@ -11,8 +11,9 @@ CREATE TABLE "Doctor" (
 -- CreateTable
 CREATE TABLE "appointments" (
     "id" SERIAL NOT NULL,
-    "date" TEXT NOT NULL,
-    "time" TEXT NOT NULL,
+    "practice_name" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "doctorId" INTEGER NOT NULL,
     "reason" TEXT NOT NULL,
 

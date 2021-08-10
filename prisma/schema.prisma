@@ -22,12 +22,13 @@ model Doctor {
 }
 
 model Appointment {
-  id       Int     @id @default(autoincrement())
-  date     String
-  time     String
-  doctor   Doctor? @relation(fields: [doctorId], references: [id])
-  doctorId Int
-  reason   String
+  id            Int      @id @default(autoincrement())
+  practice_name String
+  date          DateTime @default(now())
+  time          DateTime @default(now())
+  doctor        Doctor?  @relation(fields: [doctorId], references: [id])
+  doctorId      Int
+  reason        String
 
   @@map("appointments")
 }
