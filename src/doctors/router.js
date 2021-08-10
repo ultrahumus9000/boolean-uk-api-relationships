@@ -1,10 +1,26 @@
 const doctorRouter = require("express").Router();
 
-doctorRouter.get("/", (req, res) => {});
-doctorRouter.get("/:id", (req, res) => {});
-doctorRouter.patch("/:id", (req, res) => {});
-doctorRouter.post("/", (req, res) => {});
-doctorRouter.delete("/:id", (req, res) => {});
+const {
+  getAllDoctors,
+  getOneDoctor,
+  getDoctorWithAppointments,
+  getOneDoctorPracticePlace,
+  getMostBusyDoctor,
+  getTotalHoursOneDoctor,
+  postNewDoctor,
+  updateOneDoctor,
+  deleteOneDoctor,
+} = require("./controller");
+
+doctorRouter.get("/", getAllDoctors);
+doctorRouter.get("/:id", getOneDoctor);
+doctorRouter.get("/:id/appointments", getDoctorWithAppointments);
+doctorRouter.get("/:id/practice", getOneDoctorPracticePlace);
+doctorRouter.get("/mostbusy", getMostBusyDoctor);
+doctorRouter.get("/total-hours", getTotalHoursOneDoctor);
+doctorRouter.patch("/:id", updateOneDoctor);
+doctorRouter.post("/", postNewDoctor);
+doctorRouter.delete("/:id", deleteOneDoctor);
 
 module.exports = doctorRouter;
 // Build these routes and controllers for the doctor resource that work with the following fetch requests:
