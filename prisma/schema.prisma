@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Doctor {
+  id           Int           @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  specialty    String
+  appointments Appointment[]
+
+  @@unique([first_name, last_name])
+}
+
+model Appointment {
+  id       Int     @id @default(autoincrement())
+  date     String
+  time     String
+  doctor   Doctor? @relation(fields: [doctorId], references: [id])
+  doctorId Int
+  reason   String
+
+  @@map("appointments")
+}
+
+// Doctor:
+// - First name
+// - Last name
+// - Specialty
+// - Doctor has many appointments
+
+// Appointment
+// - Practice name
+// - Date
+// - Time
+// - Reason
+// - Appointment belongs to Doctor
+
+// Create a seed file with some mock data. Don't spend too much time on this!
