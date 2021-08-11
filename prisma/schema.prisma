@@ -8,7 +8,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
 }
 
 model Doctor {
@@ -26,7 +27,7 @@ model Appointment {
   practice_name String
   date          DateTime @default(now())
   time          DateTime @default(now())
-  doctor        Doctor?  @relation(fields: [doctorId], references: [id])
+  doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   doctorId      Int
   reason        String
 

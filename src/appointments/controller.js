@@ -4,6 +4,10 @@ const { doctor, appointment } = require("../database");
 //
 //     -- /appointments?filter=type&value=value that returns appointments by filter
 
+function handleError(error) {
+  return error.message ? error.message : error;
+}
+
 async function getAllAppointments(req, res) {
   const filterQuery = req.query.filter;
   const orderCommend = req.query.order;
@@ -57,8 +61,36 @@ async function makeNewAppointment(req, res) {
     res.json(error.message);
   }
 }
-async function getOneAppointment(req, res) {}
-async function deleteAppointment(req, res) {}
+async function getOneAppointment(req, res) {
+  const appId = Number(req.params.id);
+  try {
+    const appointmentInfo = await appointment.findUnique({
+      where: {
+        id: appId,
+      },
+    });
+    if (appointmentInfo) {
+      res.json(appointmentInfo);
+    } else {
+      throw "no such appointment";
+    }
+  } catch (error) {
+    res.json(handleError(error));
+  }
+}
+async function deleteAppointment(req, res) {
+  const appId = Number(req.params.id);
+  try {
+    await appointment.delete({
+      where: {
+        id: appId,
+      },
+    });
+    res.json("deleted");
+  } catch (error) {
+    res.json(error.message);
+  }
+}
 
 module.exports = {
   getAllAppointments,
@@ -67,4 +99,5 @@ module.exports = {
   makeNewAppointment,
   getOneAppointment,
   deleteAppointment,
+  handleError,
 };

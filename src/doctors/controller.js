@@ -1,6 +1,7 @@
 //     -- Full CRUD base routes
 
 const { doctor, appointment } = require("../database");
+const { handleError } = require("../appointments/controller");
 
 async function getAllDoctors(req, res) {
   try {
@@ -10,7 +11,20 @@ async function getAllDoctors(req, res) {
     res.json(error.message);
   }
 }
-async function getOneDoctor(req, res) {}
+async function getOneDoctor(req, res) {
+  const doctorId = Number(req.params.id);
+  try {
+    const doctorInfo = await doctor.findUnique({
+      where: {
+        id: doctorId,
+      },
+    });
+    if (doctorInfo) res.json(doctorInfo);
+    throw "doctor doesnt exist";
+  } catch (error) {
+    res.json(handleError(error));
+  }
+}
 
 async function getDoctorWithAppointments(req, res) {
   const doctorId = Number(req.params.id);
@@ -51,9 +65,10 @@ async function getDoctorWithAppointments(req, res) {
     result = result === null ? "no such doctor" : result;
     res.json(result);
   } catch (error) {
-    res.json(error.message);
+    res.json(handleError(error));
   }
 }
+
 async function getOneDoctorPracticePlace(req, res) {
   const doctorId = Number(req.params.id);
   try {
@@ -118,9 +133,75 @@ async function getTotalHoursOneDoctor(req, res) {
     res.json(error.message);
   }
 }
-async function postNewDoctor(req, res) {}
-async function updateOneDoctor(req, res) {}
-async function deleteOneDoctor(req, res) {}
+
+async function postNewDoctor(req, res) {
+  try {
+    const result = await doctor.create({
+      data: req.body,
+    });
+    res.json(result);
+  } catch (error) {
+    res.json(error.message);
+  }
+}
+async function updateOneDoctor(req, res) {
+  try {
+    const doctorInfo = await doctor.findUnique({
+      where: {
+        id: req.body.doctorId,
+      },
+    });
+
+    const updatedDoctor = await doctor.update({
+      where: {
+        id: req.body.doctorId,
+      },
+      data: {
+        specialty: req.body.specialty,
+      },
+    });
+    res.json(updatedDoctor);
+  } catch (error) {
+    res.json(error);
+  }
+}
+async function deleteOneDoctor(req, res) {
+  // method one simply delete the doctor with cascading style
+  //method 2 delete the existing doctor and ressign new doctor
+
+  const doctorId = Number(req.params.id);
+
+  let doctors = await doctor.findMany();
+
+  const newDoctors = doctors.filter((doctor) => doctor.id !== doctorId);
+
+  const doctorsIds = newDoctors.map((doctor) => doctor.id);
+
+  const newDoctorId = Math.floor(Math.random() * doctors.length);
+
+  try {
+    if (doctorsIds.length === doctors.length) throw "no such doctor";
+
+    await appointment.updateMany({
+      where: {
+        doctorId: doctorId,
+      },
+      data: {
+        doctorId: newDoctors[newDoctorId].id,
+      },
+    });
+
+    const result = await doctor.delete({
+      where: {
+        id: doctorId,
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    console.log("failure");
+    res.json(handleError(error));
+  }
+}
 
 module.exports = {
   getAllDoctors,
