@@ -13,7 +13,7 @@ const {
 } = require("./controller");
 
 doctorRouter.get("/", getAllDoctors);
-doctorRouter.get("/:id", getOneDoctor);
+doctorRouter.get("/doctor/:id", getOneDoctor);
 doctorRouter.get("/:id/appointments", getDoctorWithAppointments);
 doctorRouter.get("/:id/practice", getOneDoctorPracticePlace);
 doctorRouter.get("/mostbusy", getMostBusyDoctor);
