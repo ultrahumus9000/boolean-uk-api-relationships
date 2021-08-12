@@ -9,12 +9,12 @@ function handleError(error) {
 }
 
 async function getAllAppointments(req, res) {
-  const filterQuery = req.query.filter;
+  const { filter, value } = req.query;
   const orderCommend = req.query.order;
   let result = [];
   try {
-    if (filterQuery) {
-    } else if (orderCommend) {
+    if (filter && value) {
+    } else if (orderCommend === "recent") {
       result = await appointment.findMany({
         orderBy: {
           time: "desc",
