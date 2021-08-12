@@ -1,4 +1,4 @@
-const { doctor, appointment } = require("../database");
+const { doctor, appointment, patient } = require("../database");
 // Build these routes and controllers for the appointment resource that work with the following fetch requests:
 //     -- Full CRUD base routes
 //
@@ -39,6 +39,12 @@ async function getAptWithDoctors(req, res) {
             last_name: true,
           },
         },
+        patient: {
+          select: {
+            first_name: true,
+            last_name: true,
+          },
+        },
       },
     });
     res.json(result);
@@ -46,7 +52,30 @@ async function getAptWithDoctors(req, res) {
     res.json(error.message);
   }
 }
-async function updateAppointment(req, res) {}
+async function updateAppointment(req, res) {
+  const appointmentId = Number(req.params.id);
+
+  try {
+    let appontments = await appointment.findMany();
+    const appontmentsIds = appontments.map((appontment) => appontment.id);
+
+    if (appontmentsIds.includes(appointmentId)) {
+      const appointmentInfo = await appointment.findUnique({
+        where: { id: appointmentId },
+      });
+
+      const result = await appointment.update({
+        where: { id: appointmentId },
+        data: { ...appointmentInfo, ...req.body },
+      });
+      res.json(result);
+    } else {
+      throw "no such appointment";
+    }
+  } catch (error) {
+    res.json(handleError(error));
+  }
+}
 
 async function makeNewAppointment(req, res) {
   try {
@@ -55,18 +84,32 @@ async function makeNewAppointment(req, res) {
         ...req.body,
       },
     });
-
     res.json(result);
   } catch (error) {
     res.json(error.message);
   }
 }
+
 async function getOneAppointment(req, res) {
   const appId = Number(req.params.id);
   try {
     const appointmentInfo = await appointment.findUnique({
       where: {
         id: appId,
+      },
+      include: {
+        patient: {
+          select: {
+            first_name: true,
+            last_name: true,
+          },
+        },
+        doctor: {
+          select: {
+            first_name: true,
+            last_name: true,
+          },
+        },
       },
     });
     if (appointmentInfo) {

@@ -19,32 +19,42 @@ model Doctor {
   specialty    String
   appointments Appointment[]
 
-  @@unique([first_name, last_name])
+  // @@unique([first_name, last_name])
 }
 
 model Appointment {
   id            Int      @id @default(autoincrement())
   practice_name String
   date          DateTime @default(now())
-  time          DateTime @default(now())
   doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   doctorId      Int
   reason        String
+  patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
+  patientId Int
   @@map("appointments")
 }
 
-// Doctor:
-// - First name
-// - Last name
-// - Specialty
-// - Doctor has many appointments
+model Patient {
+  id           Int           @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  dob          DateTime      @db.Date
+  appointments Appointment[]
+}
 
-// Appointment
-// - Practice name
-// - Date
-// - Time
-// - Reason
-// - Appointment belongs to Doctor
+// Like we've discussed this morning, to continue yesterday's exercise, we're going to add a new model to our app!
 
-// Create a seed file with some mock data. Don't spend too much time on this!
+// Instructions
+// - Create a new Patient model in your schema
+// - It should have the following attributes
+//   - First Name
+//   - Last Name
+//   - Date of Birth
+//   - A patient has many appointments
+
+// - Create also a router and a controller for the patients, and implement the following routes
+//   - Base CRUD
+//   - "/patients/:id/appointments" to see a list of the patient's appointments
+//   - "/patients/:id/doctors" to see a list of doctors that the patient is seeing
+//   -"/patients/:id/doctors?filterPractice=value" to see a list of doctors, filtered by practice

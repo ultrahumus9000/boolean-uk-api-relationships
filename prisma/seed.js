@@ -1,49 +1,89 @@
+const faker = require("faker");
+
 const { PrismaClient } = require("@prisma/client");
 
 const db = new PrismaClient();
-const { appointment, doctor } = db;
-
+const { appointment, doctor, patient } = db;
+const doctors = [1, 2, 3, 4, 5];
 async function seed() {
-  await doctor.create({
-    data: {
-      first_name: "linlin",
-      last_name: "li",
-      specialty: "diabetes",
-      appointments: {
-        createMany: {
-          data: [
+  for await (const doc of doctors) {
+    await doctor.create({
+      data: {
+        first_name: faker.name.firstName(),
+        last_name: faker.name.lastName(),
+        specialty: "diabetes",
+        appointments: {
+          create: [
             {
-              practice_name: "Sunny",
-              date: "2021-08-05T11:13:00.000Z",
-              time: "2021-08-05T11:13:00.000Z",
-              reason: "blood sugar is high",
+              practice_name: faker.company.companyName(),
+              date: faker.date.recent(),
+              reason: faker.lorem.words(5),
+              patient: {
+                create: {
+                  first_name: faker.name.firstName(),
+                  last_name: faker.name.lastName(),
+                  dob: faker.date.past(40),
+                },
+              },
             },
             {
-              practice_name: "Sunny",
-              date: "2021-08-05T14:13:00.000Z",
-              time: "2021-08-05T14:13:00.000Z",
-              reason: "blood sugar is low",
+              practice_name: faker.company.companyName(),
+              date: faker.date.recent(),
+              reason: faker.lorem.words(5),
+              patient: {
+                create: {
+                  first_name: faker.name.firstName(),
+                  last_name: faker.name.lastName(),
+                  dob: faker.date.past(40),
+                },
+              },
             },
             {
-              practice_name: "Moon",
-              date: "2021-08-08T11:13:00.000Z",
-              time: "2021-08-08T11:13:00.000Z",
-              reason: "bellyache bad bowl",
+              practice_name: faker.company.companyName(),
+              date: faker.date.recent(),
+              reason: faker.lorem.words(5),
+              patient: {
+                create: {
+                  first_name: faker.name.firstName(),
+                  last_name: faker.name.lastName(),
+                  dob: faker.date.past(40),
+                },
+              },
             },
             {
-              practice_name: "Moon",
-              date: "2021-08-08T15:13:00.000Z",
-              time: "2021-08-08T15:13:00.000Z",
-              reason: "headache not good",
+              practice_name: faker.company.companyName(),
+              date: faker.date.recent(),
+              reason: faker.lorem.words(5),
+              patient: {
+                create: {
+                  first_name: faker.name.firstName(),
+                  last_name: faker.name.lastName(),
+                  dob: faker.date.past(40),
+                },
+              },
+            },
+            {
+              practice_name: faker.company.companyName(),
+              date: faker.date.recent(),
+              reason: faker.lorem.words(5),
+              patient: {
+                create: {
+                  first_name: faker.name.firstName(),
+                  last_name: faker.name.lastName(),
+                  dob: faker.date.past(40),
+                },
+              },
             },
           ],
         },
       },
-    },
-    include: {
-      appointments: true,
-    },
-  });
+      include: {
+        appointments: true,
+      },
+    });
+
+    console.log("lol");
+  }
 }
 
 seed()
@@ -55,23 +95,34 @@ seed()
     await db.$disconnect();
   });
 
-// model Doctor {
+//   model Doctor {
 //     id           Int           @id @default(autoincrement())
 //     first_name   String
 //     last_name    String
 //     specialty    String
 //     appointments Appointment[]
 
-//     @@unique([first_name, last_name])
+//     // @@unique([first_name, last_name])
 //   }
 
 //   model Appointment {
-//     id       Int     @id @default(autoincrement())
-//     date     String
-//     time     String
-//     doctor   Doctor? @relation(fields: [doctorId], references: [id])
-//     doctorId Int
-//     reason   String
+//     id            Int      @id @default(autoincrement())
+//     practice_name String
+//     date          DateTime @default(now())
+//     time          DateTime @default(now())
+//     doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+//     doctorId      Int
+//     reason        String
+//     patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
+//     patientId Int
 //     @@map("appointments")
+//   }
+
+//   model Patient {
+//     id           Int           @id @default(autoincrement())
+//     first_time   String
+//     last_name    String
+//     dob          DateTime      @db.Date
+//     appointments Appointment[]
 //   }

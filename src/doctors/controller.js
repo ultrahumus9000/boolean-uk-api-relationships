@@ -1,6 +1,6 @@
 //     -- Full CRUD base routes
 
-const { doctor, appointment } = require("../database");
+const { doctor, appointment, patient } = require("../database");
 const { handleError } = require("../appointments/controller");
 
 async function getAllDoctors(req, res) {
@@ -39,9 +39,14 @@ async function getDoctorWithAppointments(req, res) {
         appointments: {
           select: {
             date: true,
-            time: true,
             reason: true,
             practice_name: true,
+            patient: {
+              select: {
+                first_name: true,
+                last_name: true,
+              },
+            },
           },
         },
       },
@@ -54,7 +59,7 @@ async function getDoctorWithAppointments(req, res) {
     //     appointments: {
     //       select: {
     //         date: true,
-    //         time: true,
+
     //         reason: true,
     //         practice_name: true,
     //       },
